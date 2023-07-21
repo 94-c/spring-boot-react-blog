@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Button, ButtonGroup, Container, Table } from 'reactstrap';
 import AppNavbar from './AppNavbar';
 import { Link } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 const GroupList = () => {
 
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [cookies] = useCookies(['XSRF-TOKEN']);
+
 
     useEffect(() => {
         setLoading(true);
@@ -23,9 +26,11 @@ const GroupList = () => {
         await fetch(`/api/group/${id}`, {
             method: 'DELETE',
             headers: {
+                'X-XSRF-TOKEN': cookies['XSRF-TOKEN'],
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
-            }
+            },
+            credentials: 'include'
         }).then(() => {
             let updatedGroups = [...groups].filter(i => i.id !== id);
             setGroups(updatedGroups);
